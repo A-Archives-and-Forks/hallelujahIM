@@ -471,19 +471,12 @@ static const KeyCode KEY_RETURN = 36, KEY_SPACE = 49, KEY_DELETE = 51, KEY_ESC =
         NSArray *predictions = [engine predictNextWordsForContext:ctx prefixFilter:originalInput maxResults:5];
         if (predictions.count > 0) {
             // Always put current user input as the first candidate
-            NSMutableArray *blended = [NSMutableArray arrayWithArray:@[ originalInput ]];
-            for (NSString *word in predictions) {
-                if (![blended containsObject:word]) {
-                    [blended addObject:word];
-                }
-            }
-            for (NSString *word in candidateList) {
-                if (![blended containsObject:word]) {
-                    [blended addObject:word];
-                }
-            }
-            _candidates = [NSMutableArray arrayWithArray:blended];
-            return blended;
+            NSMutableOrderedSet *blended = [NSMutableOrderedSet orderedSetWithObject:originalInput];
+            [blended addObjectsFromArray:predictions];
+            [blended addObjectsFromArray:candidateList];
+            NSArray *result = [blended array];
+            _candidates = [NSMutableArray arrayWithArray:result];
+            return result;
         }
     }
 
