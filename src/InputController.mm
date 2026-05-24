@@ -470,7 +470,13 @@ static const KeyCode KEY_RETURN = 36, KEY_SPACE = 49, KEY_DELETE = 51, KEY_ESC =
     if (enableNextWordPrediction && ctx && originalInput.length > 0) {
         NSArray *predictions = [engine predictNextWordsForContext:ctx prefixFilter:originalInput maxResults:5];
         if (predictions.count > 0) {
-            NSMutableArray *blended = [NSMutableArray arrayWithArray:predictions];
+            // Always put current user input as the first candidate
+            NSMutableArray *blended = [NSMutableArray arrayWithArray:@[ originalInput ]];
+            for (NSString *word in predictions) {
+                if (![blended containsObject:word]) {
+                    [blended addObject:word];
+                }
+            }
             for (NSString *word in candidateList) {
                 if (![blended containsObject:word]) {
                     [blended addObject:word];
